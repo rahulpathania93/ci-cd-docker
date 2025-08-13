@@ -1,0 +1,7 @@
+#  prevent unnecssary files from being copied in Docker image
+__pscache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
