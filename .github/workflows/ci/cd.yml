@@ -1,1 +1,42 @@
-c
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-test-push-deploy: 
+    runs-on: self-hosted
+
+    # sDOCKER_IMAGE: RAHUL70007/flask-ci-cd
+      # version: 
+    steps: 
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+    # log in to docker hub
+      - name : Login to Docker Hub
+        uses: docker/login-action@v2
+
+      - name: Log in to Docker Hub  
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_PASSWORD}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with: 
+          context: .
+          push: true
+          tags: ${{secrets.DOCKER_HUB_USERNAME}}/ci-cd-docker:latest
+
+      - name: Deploy on self-hosted server
+        run: | 
+          docker pull ${{secrets.DOCKER_HUB_USERNAME}}/ci-cd-docker:latest
+          docker stop flask-app || true
+          docker rm flask-app || true
+          docker run -d -p 5009:5009 --name flask-app ${{secrets.DOCKER_HUB_USERNAME}}/ci-cd-docker:latest
