@@ -58,3 +58,4 @@ jobs:
           docker stop flask-app || true
           docker rm flask-app || true
           docker run -d -p 5009:5009 --name flask-app ${{ secrets.DOCKER_HUB_USERNAME }}/ci-cd-docker:latest
+# another test
